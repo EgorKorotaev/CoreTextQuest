@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List
 
-# -------------------------------- ENTINTY --------------------------------
+# -------------------------------- ENTITY --------------------------------
 GameDialogId = str
 DialogActionId = str
 
@@ -14,24 +14,12 @@ class DialogAction:
     action: str
     next_dialog_id: GameDialogId
 
-    def __str__(self):
-        return f'{self.action_order}: {self.action}'
-
 
 @dataclass
 class GameDialog:
     id: GameDialogId
     exposure: str
     actions: List[DialogAction]
-
-    def __str__(self):
-        output_str = '********************************\n'
-        output_str += f'Game Dialog id: {self.id}\n'
-        output_str += f'Exposure: {self.exposure}\n--------------------------------\n'
-        for action in self.actions:
-            output_str += f'{action.__str__()}\n'
-        output_str += '********************************'
-        return output_str
 
 
 # -------------------------------- Use Case --------------------------------
@@ -78,7 +66,12 @@ class ConsoleDialogPresenter(DialogPresenter):  # presenter
         pass
 
     def present(self, dialog: GameDialog):
-        print(dialog)
+        output_str = '********************************\n'
+        output_str += f'Exposure: {dialog.exposure}\n--------------------------------\n'
+        for action in dialog.actions:
+            output_str += f'{action.action_order}: {action.action}\n'
+        output_str += '********************************'
+        print(output_str)
 
 
 class HashMapDialogsGateway(ObjectsGateway):  # gateway
@@ -100,16 +93,16 @@ class HashMapDialogsGateway(ObjectsGateway):  # gateway
         }
 
         self.storage_exposure = {
-            'e0': {"text": "Верьте, или не верьте, но жил на белом свете..."},
-            'e1': {"text": "test 1"},
-            'e2': {"text": "test 2"},
+            'e0': {"text": "Локация 0"},
+            'e1': {"text": "Локация 1"},
+            'e2': {"text": "Локация 2"},
         }
 
         self.storage_action = {
-            "ar": {"text": "Повторить"},
-            "a0": {"text": "Вариант 0"},
-            "a1": {"text": "Вариант 1"},
-            "a2": {"text": "Вариант 2"},
+            "ar": {"text": "Где-где я?"},
+            "a0": {"text": "Иду в 'Локацию 0'"},
+            "a1": {"text": "Иду в 'Локацию 1'"},
+            "a2": {"text": "Иду в 'Локацию 2'"},
         }
 
     def get_dialog_by_id(self, dialog_id: str) -> GameDialog:
@@ -118,8 +111,7 @@ class HashMapDialogsGateway(ObjectsGateway):  # gateway
         exposure = self.storage_exposure[self.storage_dialog[dialog_id]['exposure']]['text']
         actions = self.storage_dialog[dialog_id]['actions']
         for i in range(len(actions)):
-        # for action_order, data in actions:
-            result_actions.append(DialogAction(action_order=i,
+            result_actions.append(DialogAction(action_order=i.__str__(),
                                                action_id=actions[i]['action'],
                                                action=self.storage_action[actions[i]['action']]['text'],
                                                next_dialog_id=actions[i]['next_dialog']))
