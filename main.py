@@ -1,63 +1,13 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List
 
 # -------------------------------- ENTITY --------------------------------
-GameDialogId = str
-DialogActionId = str
+from dialog.domain.dialog import GameDialog
+from dialog.domain.dialog_action import DialogAction
 
-
-@dataclass
-class DialogAction:
-    action_order: str
-    action_id: DialogActionId
-    action: str
-    next_dialog_id: GameDialogId
-
-
-@dataclass
-class GameDialog:
-    id: GameDialogId
-    exposure: str
-    actions: List[DialogAction]
 
 
 # -------------------------------- Use Case --------------------------------
-@dataclass
-class DialogParams:
-    dialog_id: str
-
-
-class DialogUseCase(ABC):  # Input port
-
-    @abstractmethod
-    def dialogs(self, params: DialogParams):
-        pass
-
-
-class DialogPresenter(ABC):  # output port
-
-    @abstractmethod
-    def present(self, dialog: GameDialog):
-        print(dialog)
-
-
-class ObjectsGateway(ABC):  # external port (gateway interface)
-
-    def get_dialog_by_id(self, dialog_id: str) -> GameDialog:
-        pass
-
-
-class DialogUseCaseImpl(DialogUseCase):  # interactor (use case)
-
-    def __init__(self, dialogs_presenter: DialogPresenter, dialogs_gateway: ObjectsGateway):
-        self.dialogs_presenter = dialogs_presenter
-        self.dialogs_gateway = dialogs_gateway
-
-    def dialogs(self, params: DialogParams):
-        dialog = self.dialogs_gateway.get_dialog_by_id(params.dialog_id)
-        self.dialogs_presenter.present(dialog)
-
 
 # -------------------------------- Adapters (Controllers, Gateways) --------------------------------
 class ConsoleDialogPresenter(DialogPresenter):  # presenter

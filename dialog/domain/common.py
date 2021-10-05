@@ -1,0 +1,2 @@
+DialogId = str
+DialogActionId = str
